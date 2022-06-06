@@ -1,0 +1,5 @@
+========== Dataset & Image References ==========
+    - https://www.kaggle.com/datasets/wobotintelligence/face-mask-detection-dataset
+    - https://www.shutterstock.com/search/people+wearingcloth+mask?kw=shutterstock&c3apidt=p28720058952&gclid=CjwKCAjwy_aUBhACEiwA2IHHQDYt7v1f62pJGeZFw3Nu4telS6naIzKTpvDIj2mhxPSjcsiiDAvpEBoCjUAQAvD_BwE&gclsrc=aw.ds&page=2
+    - https://www.google.com/search?q=person+wearing+cloth+mask&tbm=isch&ved=2ahUKEwiW44-B_Jn4AhUIrXIEHdS0AgsQ2-cCegQIABAA&oq=cloth+mask+perso&gs_lcp=CgNpbWcQARgAMgYIABAeEAg6BAgAEEM6BQgAEIAEUNAFWLsXYPQgaABwAHgAgAFiiAGrBJIBATeYAQCgAQGqAQtnd3Mtd2l6LWltZ8ABAQ&sclient=img&ei=SYyeYtaaPIjaytMP1OmKWA&rlz=1C1CHBF_enCA815CA815
+    - 

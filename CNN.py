@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 from torch.utils.data import random_split
 from skorch import NeuralNetClassifier
-
+from sklearn.metrics import precision_recall_fscore_support as score
 
 # ----- Variables & Parameters -----
 num_epochs = 4
@@ -114,13 +114,39 @@ net = NeuralNetClassifier(
     )
 
 
+print('----- Starting training... -----')
+
 net.fit(training_set, y=y_train)
+
+print('----- Training Complete -----')
 
 y_pred = net.predict(testing_set)
 y_test = np.array([y for (x, y) in iter(testing_set)])
-accuracy_score(y_test, y_pred)
+
+accuracy = accuracy_score(y_test, y_pred)
+
+labels = ['Cloth', 'N95', 'NoMask', 'Surgical']
+
 plot_confusion_matrix(net, testing_set, y_test.reshape(-1, 1))
+
 plt.show()
+
+
+precision, recall, fscore, support = score(y_test, y_pred)
+
+print('precision: {}'.format(precision))
+print('recall: {}'.format(recall))
+print('fscore: {}'.format(fscore))
+print('support: {}'.format(support))
+print('accuracy: {}'.format(accuracy))
+
+
+
+print('----- Saving model -----')
+torch.save(FaceMaskCNN().state_dict(),"model.pth")
+
+
+
 
 # net.fit(training_set, y=y_train)
 # train_sliceable = SliceDataset(training_set)

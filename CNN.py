@@ -25,7 +25,7 @@ training_set_size = 1200
 testing_set_size = 400
 batch_size = 32
 device = torch.device('cpu')
-img_size = 224
+img_size = 64
 
 # ----- Initialize the transformation configuration -----
 transform = transforms.Compose([
@@ -54,38 +54,36 @@ class FaceMaskCNN(nn.Module):
         super(FaceMaskCNN, self).__init__()
 
         self.conv_layer = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3,
+                      padding=1),
             nn.BatchNorm2d(32),
             nn.LeakyReLU(inplace=True),
-
-            nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3,
+                      padding=1),
             nn.BatchNorm2d(32),
             nn.LeakyReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
-
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3,
+                      padding=1),
             nn.BatchNorm2d(64),
             nn.LeakyReLU(inplace=True),
-
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3,padding=1),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3,
+                      padding=1),
             nn.BatchNorm2d(64),
             nn.LeakyReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=2, stride=2), 
         )
 
-        # TODO: FIX MAT1 AND MAT2 SHAPES CANNOT BE MULTIPLIED
-        # POSSIBLE SOLUTION: https://discuss.pytorch.org/t/runtimeerror-mat1-and-mat2-shapes-cannot-be-multiplied-64x13056-and-153600x2048/101315/6
 
         self.fc_layer = nn.Sequential(
             nn.Dropout(p=0.1),
-            nn.Linear(8 * 8 * 64, 1000),
+            nn.Linear(16384, 1024),
             nn.ReLU(inplace=True),
-            nn.Linear(1000, 512),
+            nn.Linear(1024, 512),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.1),
-            nn.Linear(512, 10),
-        )
-
+            nn.Linear(512,6)
+            )
 
 
     def forward(self, x):
@@ -105,11 +103,11 @@ torch.manual_seed(0)
 
 net = NeuralNetClassifier(
     FaceMaskCNN,
-    max_epochs=10,
+    max_epochs=num_epochs,
     iterator_train__num_workers=0,
     iterator_valid__num_workers=0,
     lr=1e-3,
-    batch_size=64,
+    batch_size=batch_size,
     optimizer=optim.Adam,
     criterion=nn.CrossEntropyLoss,
     device=device,

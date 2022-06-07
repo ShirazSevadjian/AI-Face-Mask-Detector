@@ -1,31 +1,39 @@
-from torch.utils.data import DataLoader
+# ----- Imports -----
 import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
+from torchvision.datasets import ImageFolder
+from torch.utils.data import random_split
 import torchvision.datasets
-import os
-import matplotlib.pyplot as plt
 import numpy as np
 
+
+# ----- Variables & Parameters -----
 num_epochs = 4
 num_classes = 4
 learning_rate = 0.001
+dataset_root = "./dataset"
+training_set_size = 1200
+testing_set_size = 400
+batch_size = 32
 
-#Transform the images
+# ----- Initialize the transformation configuration -----
 transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.RandomRotation(10),
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-#Train and Test datasets
-dataset = torchvision.datasets.ImageFolder(root="./dataset", transform=transform)
-trainset, testset = torch.utils.data.random_split(dataset, [1200, 400])
+# ----- Splitting dataset into training and testing sets -----
+dataset = ImageFolder(root=dataset_root, transform=transform)
+training_set, testing_set = random_split(dataset, [training_set_size, testing_set_size])
 
-#Loaders
-train_loader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True)
-test_loader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False)
+
+# ----- Load Data -----
+train_loader = DataLoader(training_set, batch_size, shuffle=True)
+test_loader = DataLoader(testing_set, batch_size, shuffle=False)
 
 
 

@@ -24,7 +24,7 @@ dataset_root = "./dataset"
 training_set_size = 1200
 testing_set_size = 400
 batch_size = 32
-device = torch.device('cpu')
+device = torch.device("cpu")
 img_size = 64
 
 # ----- Initialize the transformation configuration -----
@@ -122,6 +122,6 @@ accuracy_score(y_test, y_pred)
 plot_confusion_matrix(net, testing_set, y_test.reshape(-1, 1))
 plt.show()
 
-net.fit(training_set, y=y_train)
-train_sliceable = SliceDataset(training_set)
-scores = cross_val_score(net, train_sliceable, y_train, cv=5, scoring='accuracy')
+# net.fit(training_set, y=y_train)
+# train_sliceable = SliceDataset(training_set)
+# scores = cross_val_score(net, train_sliceable, y_train, cv=5, scoring='accuracy')

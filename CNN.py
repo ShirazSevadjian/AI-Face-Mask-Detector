@@ -2,12 +2,18 @@
 import torch
 import torch.nn as nn
 import torchvision
+import torchvision.datasets
+import numpy as np
+import torch.optim as optim
 import torchvision.transforms as transforms
+from matplotlib import pyplot as plt
+from sklearn.metrics import accuracy_score, plot_confusion_matrix
+from sklearn.model_selection import cross_val_score
+from skorch.helper import SliceDataset
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 from torch.utils.data import random_split
-import torchvision.datasets
-import numpy as np
+from skorch import NeuralNetClassifier
 
 
 # ----- Variables & Parameters -----
@@ -18,12 +24,15 @@ dataset_root = "./dataset"
 training_set_size = 1200
 testing_set_size = 400
 batch_size = 32
+device = torch.device('cpu')
+img_size = 224
 
 # ----- Initialize the transformation configuration -----
 transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.RandomRotation(10),
     transforms.ToTensor(),
+    transforms.Resize((img_size, img_size)),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 # ----- Splitting dataset into training and testing sets -----
@@ -36,4 +45,85 @@ train_loader = DataLoader(training_set, batch_size, shuffle=True)
 test_loader = DataLoader(testing_set, batch_size, shuffle=False)
 
 
+y_train = np.array([y for (x, y) in iter(training_set)])
 
+
+class FaceMaskCNN(nn.Module):
+
+    def __init__(self):
+        super(FaceMaskCNN, self).__init__()
+
+        self.conv_layer = nn.Sequential(
+            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.LeakyReLU(inplace=True),
+
+            nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.LeakyReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.LeakyReLU(inplace=True),
+
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3,padding=1),
+            nn.BatchNorm2d(64),
+            nn.LeakyReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+
+        # TODO: FIX MAT1 AND MAT2 SHAPES CANNOT BE MULTIPLIED
+        # POSSIBLE SOLUTION: https://discuss.pytorch.org/t/runtimeerror-mat1-and-mat2-shapes-cannot-be-multiplied-64x13056-and-153600x2048/101315/6
+
+        self.fc_layer = nn.Sequential(
+            nn.Dropout(p=0.1),
+            nn.Linear(8 * 8 * 64, 1000),
+            nn.ReLU(inplace=True),
+            nn.Linear(1000, 512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.1),
+            nn.Linear(512, 10),
+        )
+
+
+
+    def forward(self, x):
+        # conv layers
+        x = self.conv_layer(x)
+
+        # flatten
+        x = x.view(x.size(0), -1)
+
+        # fc layer
+        x = self.fc_layer(x)
+
+        return x
+
+
+torch.manual_seed(0)
+
+net = NeuralNetClassifier(
+    FaceMaskCNN,
+    max_epochs=10,
+    iterator_train__num_workers=0,
+    iterator_valid__num_workers=0,
+    lr=1e-3,
+    batch_size=64,
+    optimizer=optim.Adam,
+    criterion=nn.CrossEntropyLoss,
+    device=device,
+    )
+
+
+net.fit(training_set, y=y_train)
+
+y_pred = net.predict(testing_set)
+y_test = np.array([y for (x, y) in iter(testing_set)])
+accuracy_score(y_test, y_pred)
+plot_confusion_matrix(net, testing_set, y_test.reshape(-1, 1))
+plt.show()
+
+net.fit(training_set, y=y_train)
+train_sliceable = SliceDataset(training_set)
+scores = cross_val_score(net, train_sliceable, y_train, cv=5, scoring='accuracy')

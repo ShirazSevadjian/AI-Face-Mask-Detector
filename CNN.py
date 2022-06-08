@@ -18,7 +18,7 @@ from FaceMaskCNN import FaceMaskCNN
 
 
 # ----- Variables & Parameters -----
-num_epochs = 1
+num_epochs = 4
 num_classes = 4
 learning_rate = 0.001
 dataset_root = "./dataset"
@@ -30,11 +30,11 @@ img_size = 64
 
 # ----- Initialize the transformation configuration -----
 transform = transforms.Compose([
+    transforms.Resize((img_size, img_size)),
     transforms.RandomHorizontalFlip(),
     transforms.RandomRotation(10),
     transforms.ToTensor(),
-    transforms.Resize((img_size, img_size)),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    transforms.Normalize((0.4994, 0.4647, 0.4447), (0.2972, 0.2887, 0.2926))])
 
 # ----- Splitting dataset into training and testing sets -----
 dataset = ImageFolder(root=dataset_root, transform=transform)
@@ -49,68 +49,54 @@ test_loader = DataLoader(testing_set, batch_size, shuffle=False)
 y_train = np.array([y for (x, y) in iter(training_set)])
 
 
-torch.manual_seed(0)
-
-net = NeuralNetClassifier(
-    FaceMaskCNN,
-    max_epochs=num_epochs,
-    iterator_train__num_workers=0,
-    iterator_valid__num_workers=0,
-    lr=1e-3,
-    batch_size=batch_size,
-    optimizer=optim.Adam,
-    criterion=nn.CrossEntropyLoss,
-    device=device,
-    )
-
+model = FaceMaskCNN()
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 print('----- Starting training... -----')
+total_step = len(train_loader)
+loss_list = []
+acc_list = []
 
-net.fit(training_set, y=y_train)
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        # Forward pass
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        loss_list.append(loss.item())
 
-print('----- Training Complete -----')
+        # Backprop and optimisation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # Train accuracy
+        total = labels.size(0)
+        _, predicted = torch.max(outputs.data, 1)
+        correct = (predicted == labels).sum().item()
+        acc_list.append(correct / total)
+
+        if (i + 1) % 100 == 0:
+            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
+                  .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
+                          (correct / total) * 100))
+
+print('----- Starting testing... -----')
+
+model.eval()
+with torch.no_grad():
+    correct = 0
+    total = 0
+    for images, labels in test_loader:
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+    print('Test Accuracy of the model on the 400 test images: {} %'
+          .format((correct / total) * 100))
 
 
 print('----- Saving model -----')
-torch.save(FaceMaskCNN(), "model2.pth")
+torch.save(FaceMaskCNN(), "./models/model4.pth")
 
-
-print('----- Loading model -----')
-model2 = torch.load('model2.pth')
-model2.eval()
-
-for images, labels in test_loader:
-    print(labels)
-
-y_pred = net.predict(testing_set)
-y_test = np.array([y for (x, y) in iter(testing_set)])
-print(y_pred)
-print(y_test)
-
-accuracy = accuracy_score(y_test, y_pred)
-
-print(accuracy)
-
-labels = ['Cloth', 'N95', 'NoMask', 'Surgical']
-
-plot_confusion_matrix(net, testing_set, y_test.reshape(-1, 1))
-
-plt.show()
-
-
-precision, recall, fscore, support = score(y_test, y_pred)
-
-print('precision: {}'.format(precision))
-print('recall: {}'.format(recall))
-print('fscore: {}'.format(fscore))
-print('support: {}'.format(support))
-print('accuracy: {}'.format(accuracy))
-
-
-
-
-
-
-# net.fit(training_set, y=y_train)
-# train_sliceable = SliceDataset(training_set)
-# scores = cross_val_score(net, train_sliceable, y_train, cv=5, scoring='accuracy')

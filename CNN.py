@@ -2,7 +2,6 @@
 import torch
 import torch.nn as nn
 import torchvision
-import torchvision.datasets
 import numpy as np
 import torch.optim as optim
 import torchvision.transforms as transforms
@@ -15,9 +14,11 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import random_split
 from skorch import NeuralNetClassifier
 from sklearn.metrics import precision_recall_fscore_support as score
+from FaceMaskCNN import FaceMaskCNN
+
 
 # ----- Variables & Parameters -----
-num_epochs = 4
+num_epochs = 1
 num_classes = 4
 learning_rate = 0.001
 dataset_root = "./dataset"
@@ -48,57 +49,6 @@ test_loader = DataLoader(testing_set, batch_size, shuffle=False)
 y_train = np.array([y for (x, y) in iter(training_set)])
 
 
-class FaceMaskCNN(nn.Module):
-
-    def __init__(self):
-        super(FaceMaskCNN, self).__init__()
-
-        self.conv_layer = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3,
-                      padding=1),
-            nn.BatchNorm2d(32),
-            nn.LeakyReLU(inplace=True),
-            nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3,
-                      padding=1),
-            nn.BatchNorm2d(32),
-            nn.LeakyReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3,
-                      padding=1),
-            nn.BatchNorm2d(64),
-            nn.LeakyReLU(inplace=True),
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3,
-                      padding=1),
-            nn.BatchNorm2d(64),
-            nn.LeakyReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2), 
-        )
-
-
-        self.fc_layer = nn.Sequential(
-            nn.Dropout(p=0.1),
-            nn.Linear(16384, 1024),
-            nn.ReLU(inplace=True),
-            nn.Linear(1024, 512),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.1),
-            nn.Linear(512,6)
-            )
-
-
-    def forward(self, x):
-        # conv layers
-        x = self.conv_layer(x)
-
-        # flatten
-        x = x.view(x.size(0), -1)
-
-        # fc layer
-        x = self.fc_layer(x)
-
-        return x
-
-
 torch.manual_seed(0)
 
 net = NeuralNetClassifier(
@@ -120,10 +70,26 @@ net.fit(training_set, y=y_train)
 
 print('----- Training Complete -----')
 
+
+print('----- Saving model -----')
+torch.save(FaceMaskCNN(), "model2.pth")
+
+
+print('----- Loading model -----')
+model2 = torch.load('model2.pth')
+model2.eval()
+
+for images, labels in test_loader:
+    print(labels)
+
 y_pred = net.predict(testing_set)
 y_test = np.array([y for (x, y) in iter(testing_set)])
+print(y_pred)
+print(y_test)
 
 accuracy = accuracy_score(y_test, y_pred)
+
+print(accuracy)
 
 labels = ['Cloth', 'N95', 'NoMask', 'Surgical']
 
@@ -141,9 +107,6 @@ print('support: {}'.format(support))
 print('accuracy: {}'.format(accuracy))
 
 
-
-print('----- Saving model -----')
-torch.save(FaceMaskCNN().state_dict(),"model.pth")
 
 
 

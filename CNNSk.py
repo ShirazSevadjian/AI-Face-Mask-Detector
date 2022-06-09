@@ -26,6 +26,8 @@ testing_set_size = 400
 batch_size = 32
 device = torch.device("cpu")
 img_size = 64
+classes=('Cloth','N95','No Mask','Surgical')
+
 
 # ----- Initialize the transformation configuration -----
 transform = transforms.Compose([
@@ -72,7 +74,7 @@ torch.save(FaceMaskCNN(), "./models/model4sk.pth")
 y_pred = net.predict(testing_set)
 y_test = np.array([y for (x, y) in iter(testing_set)])
 accuracy = accuracy_score(y_test, y_pred)
-plot_confusion_matrix(net, testing_set, y_test.reshape(-1, 1))
+plot_confusion_matrix(net, testing_set, y_test.reshape(-1, 1),display_labels=classes)
 plt.show()
 
 

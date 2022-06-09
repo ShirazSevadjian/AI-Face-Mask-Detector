@@ -26,7 +26,7 @@ Text file containing the references that we built our dataset with.
 ## a) Training
 1) create conda environment 
 2) install all necessary plugins (pytorch, torchvision, matplotlib, pandas, skorch, sklearn)
-3) run following command in the command prompt: python CNN.py
+3) run following command in the command prompt: python CNNSk.py
 
 ## b) Application 
 1) create conda environment 

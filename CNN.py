@@ -18,7 +18,7 @@ from FaceMaskCNN import FaceMaskCNN
 
 
 # ----- Variables & Parameters -----
-num_epochs = 4
+num_epochs = 30
 num_classes = 4
 learning_rate = 0.001
 dataset_root = "./dataset"
@@ -31,10 +31,8 @@ img_size = 64
 # ----- Initialize the transformation configuration -----
 transform = transforms.Compose([
     transforms.Resize((img_size, img_size)),
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
     transforms.ToTensor(),
-    transforms.Normalize((0.4994, 0.4647, 0.4447), (0.2972, 0.2887, 0.2926))])
+    transforms.Normalize((0.5211, 0.4858, 0.4651), (0.2889, 0.2824, 0.2880))])
 
 # ----- Splitting dataset into training and testing sets -----
 dataset = ImageFolder(root=dataset_root, transform=transform)
@@ -98,5 +96,5 @@ with torch.no_grad():
 
 
 print('----- Saving model -----')
-torch.save(FaceMaskCNN(), "./models/model4.pth")
+torch.save(FaceMaskCNN(), "./models/model30.pth")
 

@@ -5,10 +5,7 @@ from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
 #load
-
 transform = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
     transforms.Resize((64, 64)),
     transforms.ToTensor()
 ])

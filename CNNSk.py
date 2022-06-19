@@ -17,7 +17,7 @@ from sklearn.metrics import precision_recall_fscore_support as score
 from FaceMaskCNN import FaceMaskCNN
 
 # ----- Variables & Parameters -----
-num_epochs = 10
+num_epochs = 4
 num_classes = 4
 learning_rate = 0.001
 dataset_root = "./dataset"

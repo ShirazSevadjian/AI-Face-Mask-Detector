@@ -10,3 +10,5 @@
     - https://www.kaggle.com/datasets/coffee124/facemaskn95?resource=download
     - https://www.kaggle.com/datasets/andrewmvd/face-mask-detection
     - https://www.istockphoto.com/search/2/image?family=creative&phrase=black%20man%20n95
+    - https://www.google.com/search?q=kid+&tbm=isch&ved=2ahUKEwjTqO2sosH4AhWDn3IEHd8OAQIQ2-cCegQIABAA&oq=kid+&gs_lcp=CgNpbWcQAzIECAAQQzIECAAQQzIECAAQQzIHCAAQsQMQQzIHCAAQsQMQQzIHCAAQsQMQQzIHCAAQsQMQQzIECAAQQzIECAAQQzIECAAQAzoECCMQJzoGCAAQHhAHOgYIABAeEAhQ5AVY5AVg1gloAHAAeACAAUyIAYsBkgEBMpgBAKABAaoBC2d3cy13aXotaW1nwAEB&sclient=img&ei=_CazYtO6AoO_ytMP352EEA&bih=929&biw=1920&rlz=1C1CHBF_enCA882CA882
+    - https://www.google.com/search?q=kid+girl&tbm=isch&ved=2ahUKEwjIzoyvosH4AhVoqnIEHa1FA-wQ2-cCegQIABAA&oq=kid+girl&gs_lcp=CgNpbWcQAzIECAAQQzIECAAQQzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEOgcIABCxAxBDUABY-AlggwtoAHAAeACAAU-IAdUCkgEBNZgBAKABAaoBC2d3cy13aXotaW1nwAEB&sclient=img&ei=ACezYsjOLejUytMPrYuN4A4&bih=929&biw=1920&rlz=1C1CHBF_enCA882CA882

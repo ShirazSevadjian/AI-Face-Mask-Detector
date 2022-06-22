@@ -9,3 +9,4 @@
     - https://www.kaggle.com/datasets/prithwirajmitra/covid-face-mask-detection-dataset
     - https://www.kaggle.com/datasets/coffee124/facemaskn95?resource=download
     - https://www.kaggle.com/datasets/andrewmvd/face-mask-detection
+    - https://www.istockphoto.com/search/2/image?family=creative&phrase=black%20man%20n95

@@ -18,7 +18,7 @@ from FaceMaskCNN import FaceMaskCNN
 
 
 # ----- Variables & Parameters -----
-num_epochs = 30
+num_epochs = 4
 num_classes = 4
 learning_rate = 0.001
 dataset_root = "./dataset"
